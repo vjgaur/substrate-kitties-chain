@@ -1,7 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 pub use pallet::*;
-
+use scale_info::TypeInfo;
 #[frame_support::pallet]
 pub mod pallet {
     use frame_support::pallet_prelude::*;
@@ -30,6 +30,13 @@ pub mod pallet {
 	}
 
     // ACTION #2: Enum declaration for Gender.
+	#[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo)]
+	#[scale_info(skip_type_params(T))]
+	#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+	pub enum Gender {
+		Male,
+		Female,
+	}
 
     // ACTION #3: Implementation to handle Gender type in Kitty struct.
 
