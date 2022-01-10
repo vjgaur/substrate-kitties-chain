@@ -62,11 +62,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
 				],
 				true,
 			)
-			//-- snip --
-			substrate_kitties: SubstrateKittiesConfig {
-				kitties: vec![],
-			},
-			//-- snip --
+			
 		},
 		// Bootnodes
 		vec![],
@@ -137,6 +133,11 @@ fn testnet_genesis(
 	_enable_println: bool,
 ) -> GenesisConfig {
 	GenesisConfig {
+		//-- snip --
+		substrate_kitties: SubstrateKittiesConfig {
+			kitties: vec![],
+		},
+		//-- snip --
 		system: SystemConfig {
 			// Add Wasm runtime to storage.
 			code: wasm_binary.to_vec(),
