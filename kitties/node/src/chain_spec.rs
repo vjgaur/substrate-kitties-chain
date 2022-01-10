@@ -1,3 +1,4 @@
+use node_kitties_runtime::SubstrateKittiesConfig;
 use node_kitties_runtime::{
 	AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, Signature, SudoConfig,
 	SystemConfig, WASM_BINARY,
@@ -61,6 +62,11 @@ pub fn development_config() -> Result<ChainSpec, String> {
 				],
 				true,
 			)
+			//-- snip --
+			substrate_kitties: SubstrateKittiesConfig {
+				kitties: vec![],
+			},
+			//-- snip --
 		},
 		// Bootnodes
 		vec![],
