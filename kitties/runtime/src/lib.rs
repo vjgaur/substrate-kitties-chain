@@ -140,10 +140,19 @@ parameter_types! {
 	pub const SS58Prefix: u8 = 42;
 }
 
+parameter_types! {              // <- add this macro
+	// One can own at most 9,999 Kitties
+	pub const MaxKittyOwned: u32 = 9999;
+}
+
+//add the Currency type to our pallet's runtime implementation
+
+/// Configure the pallet-kitties in pallets/kitties.
 impl pallet_kitties::Config for Runtime {
 	type Event = Event;
 	type Currency = Balances;
-	type KittyRandomness = RandomnessCollectiveFlip; // <-- ACTION: add this line.
+	type KittyRandomness = RandomnessCollectiveFlip;
+	type MaxKittyOwned = MaxKittyOwned; // <- add this line
 }
 
 // Configure FRAME pallets to include in runtime.
@@ -278,12 +287,6 @@ impl pallet_transaction_payment::Config for Runtime {
 impl pallet_sudo::Config for Runtime {
 	type Event = Event;
 	type Call = Call;
-}
-
-//add the Currency type to our pallet's runtime implementation
-impl pallet_kitties::Config for Runtime {
-	type Event = Event;
-	type Currency = Balances; // <-- Add this line
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
