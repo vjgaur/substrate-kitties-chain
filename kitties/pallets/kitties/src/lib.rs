@@ -143,8 +143,30 @@ pub mod pallet {
 			Ok(())
 		}
 
-		// TODO Part IV: set_price
+		/// Updates Kitty price and updates storage.
+		#[pallet::weight(100)]
+		pub fn set_price(
+			origin: OriginFor<T>,
+			kitty_id: T::Hash,
+			new_price: Option<BalanceOf<T>>,
+		) -> DispatchResult {
+			let sender = ensure_signed(origin)?;
 
+			// ACTION #1a: Checking Kitty owner
+			ensure!(Self::is_kitty_owner(&kitty_id, &sender)?, <Error<T>>::NotKittyOwner);
+
+			let mut kitty = Self::kitties(&kitty_id).ok_or(<Error<T>>::KittyNotExist)?;
+
+			// ACTION #2: Set the Kitty price and update new Kitty infomation to storage.
+			kitty.price = new_price.clone();
+			<Kitties<T>>::insert(&kitty_id, kitty);
+
+			// ACTION #3: Deposit a "PriceSet" event.
+			// Deposit a "PriceSet" event.
+			Self::deposit_event(Event::PriceSet(sender, kitty_id, new_price));
+
+			Ok(())
+		}
 		// TODO Part IV: transfer
 
 		// TODO Part IV: buy_kitty
@@ -204,7 +226,12 @@ pub mod pallet {
 		}
 
 		// Helper to check correct kitty owner
-
+		pub fn is_kitty_owner(kitty_id: &T::Hash, acct: &T::AccountId) -> Result<bool, Error<T>> {
+			match Self::kitties(kitty_id) {
+				Some(kitty) => Ok(kitty.owner == *acct),
+				None => Err(<Error<T>>::KittyNotExist),
+			}
+		}
 		// TODO Part IV: Write transfer_kitty_to
 	}
 }
