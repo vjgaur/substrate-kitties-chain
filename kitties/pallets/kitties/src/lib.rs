@@ -2,6 +2,8 @@
 
 pub use pallet::*;
 use scale_info::TypeInfo;
+scale-info = { version = "0.6.0", features = ["derive"] }
+
 #[frame_support::pallet]
 pub mod pallet {
     use frame_support::pallet_prelude::*;
@@ -53,7 +55,10 @@ pub mod pallet {
         /// The Currency handler for the Kitties pallet.
         type Currency: Currency<Self::AccountId>;
 
+       
+
         // ACTION #5: Specify the type for Randomness we want to specify for runtime.
+        type KittyRandomness: Randomness<Self::Hash, Self::BlockNumber>;
 
         // ACTION #9: Add MaxKittyOwned constant
     }
@@ -76,6 +81,25 @@ pub mod pallet {
     pub(super) type KittyCnt<T: Config> = StorageValue<_, u64, ValueQuery>;
 
     // ACTION #7: Remaining storage items.
+    #[pallet::storage]
+    #[pallet::getter(fn kitties)]
+    pub(super) type Kitties<T: Config> = StorageMap<
+        _,
+        Twox64Concat,
+        T::Hash,
+        Kitty<T>,>;
+
+        #[pallet::storage]
+        #[pallet::getter(fn kitties_owned)]
+       
+        /// Keeps track of what accounts own what Kitty.
+        pub(super) type KittiesOwned<T: Config> = StorageMap<
+            _,
+            Twox64Concat,
+            T::AccountId,
+            BoundedVec<T::Hash, T::MaxKittyOwned>,
+            ValueQuery,>;
+
 
     // TODO Part IV: Our pallet's genesis configuration.
 
@@ -98,10 +122,23 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
 
         // ACTION #4: helper function for Kitty struct
-
+        fn gen_gender() -> Gender {
+            let random = T::KittyRandomness::random(&b"gender"[..]).0;
+            match random.as_ref()[0] % 2 {
+                0 => Gender::Male,
+                _ => Gender::Female,
+            }
+        }
         // TODO Part III: helper functions for dispatchable functions
 
         // ACTION #6: funtion to randomly generate DNA
+        fn gen_dna() -> [u8; 16] {
+            let payload = (
+                T::KittyRandomness::random(&b"dna"[..]).0,
+                <frame_system::Pallet<T>>::block_number(),
+            );
+            payload.using_encoded(blake2_128)
+        }
 
         // TODO Part III: mint
 

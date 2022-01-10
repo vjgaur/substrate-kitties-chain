@@ -140,7 +140,11 @@ parameter_types! {
 	pub const SS58Prefix: u8 = 42;
 }
 
-
+impl pallet_kitties::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type KittyRandomness = RandomnessCollectiveFlip; // <-- ACTION: add this line.
+}
 
 // Configure FRAME pallets to include in runtime.
 
